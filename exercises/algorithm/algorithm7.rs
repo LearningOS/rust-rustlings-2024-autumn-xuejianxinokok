@@ -3,7 +3,7 @@
 	This question requires you to use a stack to achieve a bracket match
 */
 
-// I AM NOT DONE
+//// I AM NOT DONE
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -32,7 +32,13 @@ impl<T> Stack<T> {
 	}
 	fn pop(&mut self) -> Option<T> {
 		// TODO
-		None
+		// TODO
+		if self.is_empty() {
+            None
+        } else {
+            self.size -= 1;
+            self.data.pop()
+        }
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
@@ -99,10 +105,45 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 	}
 }
 
+//创建一个空栈用于存储左括号。
+//遍历字符串中的每个字符：
+//如果字符是左括号（'(', '[', '{'），将其压入栈中。
+//如果字符是右括号（')', ']', '}'），则检查栈顶元素：
+//如果栈为空，则说明右括号多余，返回 false。
+//如果栈顶元素不是对应的左括号，则说明括号不匹配，返回 false。
+//如果栈顶元素是对应的左括号，则将栈顶元素弹出栈。
+//遍历结束后，检查栈是否为空：
+//如果栈为空，则说明所有左括号都有对应的右括号，返回 true。
+//如果栈不为空，则说明有左括号没有对应的右括号，返回 false。
 fn bracket_match(bracket: &str) -> bool
 {
 	//TODO
-	true
+	let mut stack = Stack::new();
+
+    for ch in bracket.chars() {
+        match ch {
+            '(' | '[' | '{' => stack.push(ch),
+            ')' => {
+                if stack.pop() != Some('(') {
+					println!("111");
+                    return false;
+                }
+            }
+            ']' => {
+                if stack.pop() != Some('[') {
+                    return false;
+                }
+            }
+            '}' => {
+                if stack.pop() != Some('{') {
+                    return false;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    stack.is_empty()
 }
 
 #[cfg(test)]
@@ -114,6 +155,7 @@ mod tests {
 		let s = "(2+3){func}[abc]";
 		assert_eq!(bracket_match(s),true);
 	}
+
 	#[test]
 	fn bracket_matching_2(){
 		let s = "(2+3)*(3-1";
