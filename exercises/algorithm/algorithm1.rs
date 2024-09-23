@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+//// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::PartialOrd+ Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd+ Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -71,12 +71,51 @@ impl<T> LinkedList<T> {
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut r=Self::default();
+        let mut next_a=list_a.start;
+        let mut next_b=list_b.start;
+        while let (op_a,op_b)=(next_a,next_b) {
+
+            match (op_a,op_b)  {
+                (Some(nodea),Some(nodeb))=>{
+                    let nodea=unsafe { nodea.as_ref() };
+                    let nodeb=unsafe { nodeb.as_ref() };
+                    let va=nodea.val.clone();
+                    let vb=nodeb.val.clone();
+                    let v= if va <=vb{
+                        next_a=nodea.next;
+                        va
+                    }else{
+                        next_b=nodeb.next;
+                        vb
+                    };
+                    r.add(v);
+                }
+                ,(Some(nodea), None) => {
+                    let nodea=unsafe { nodea.as_ref() };
+                    let va=nodea.val.clone();
+                    r.add(va);
+                    next_a=nodea.next;
+                }
+                ,(None, Some(nodeb)) => {
+                    let nodeb=unsafe { nodeb.as_ref() };
+                    let vb=nodeb.val.clone();
+                    r.add(vb);
+                    next_b=nodeb.next;
+                }
+                ,_=> break
+                
+            }
+
+
+
+            
+           
+            
         }
+        
+
+		r
 	}
 }
 
